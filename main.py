@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit
-from PyQt5.QtGui import QFontDatabase, QFont
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QCheckBox
+from PyQt5.QtGui import QFontDatabase, QFont, QTextCursor
+from PyQt5.QtCore import Qt
 import json
 import os
 
@@ -36,13 +37,20 @@ def get_result(func):
                     text_area.append(f'问题 {j + 1} 标准答案:\n')
                     for k, answer in enumerate(question['std']):
                         text_area.append(f'{k + 1}. {answer["value"]}\n')
+                        if only_one_answer.isChecked():
+                            break
             else:
                 text_area.append('标准答案:\n')
                 for k, answer in enumerate(data['info']['std']):
                     text_area.append(f'{k + 1}. {answer["value"]}\n')
+                    if only_one_answer.isChecked():
+                        break
             text_area.append('')
         except Exception as e:
             text_area.append("获取错误")
+
+    # 将光标移动到文本的开头
+    text_area.moveCursor(QTextCursor.Start)
 
 def A():
     return ['角色扮演', '故事复述']
@@ -60,13 +68,31 @@ font_family = font_families[0] if font_families else "Helvetica"
 
 # 创建主窗口
 window = QWidget()
-window.setWindowTitle("FK-ETS")
+window.setWindowTitle("AT-ETS")
 window.resize(1024, 620)
 window.setWindowOpacity(0.9)  # 设置窗口为半透明
 
-
 # 创建垂直布局
 layout = QVBoxLayout(window)
+
+# 创建标题控制栏
+title_bar = QWidget(window)
+title_layout = QHBoxLayout(title_bar)
+layout.addWidget(title_bar)
+
+# 创建固定文字
+label = QLabel("选项：", title_bar)
+font = QFont(font_family, 12)  # 设置字体为Helvetica，字体大小为18
+label.setFont(font)
+title_layout.addWidget(label)
+
+# 创建开关
+only_one_answer = QCheckBox("只显示一个答案", title_bar)
+only_one_answer.setFont(QFont(font_family, 12))  # 设置字体大小为18
+title_layout.addWidget(only_one_answer)
+
+# 在标题控制栏中添加弹性空间
+title_layout.addStretch()
 
 # 创建文本框，并设置其字体和大小随窗口大小变化
 text_area = QTextEdit(window)
