@@ -43,7 +43,7 @@ class CheckVersionThread(QThread):
                     fd.write(chunk)
             self.notify("下载更新", "下载完成，即将更新!")
 
-            # 在这里执行更新的操作，例如启动更新程序
+            #执行更新
             subprocess.Popen(["start", os.path.join("..", "update.exe")], shell=True)
         except requests.exceptions.RequestException as e:
             self.notify("下载更新", f"出现错误: {str(e)}")
